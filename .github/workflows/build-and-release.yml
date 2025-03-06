@@ -50,6 +50,12 @@ jobs:
         release_name: Release ${{ github.ref }}
         draft: false
         prerelease: false
+    
+    - name: Lists root
+      run: ls -al
+
+    - name: Lists dist
+      run: ls -al dist/*
 
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
