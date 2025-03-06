@@ -12,8 +12,7 @@
     <version>1.0.3-SNAPSHOT</version>
     <name>OccurrenceTraker</name>
     <description>OccurrenceTraker</description>
-    <url />
-
+    
     <distributionManagement>
         <snapshotRepository>
             <id>nexus-maven-snapshots</id>
@@ -26,10 +25,10 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:git:http://gitea:3000/DevOps_Master_studies/OccuranceTraker.git</connection>
-        <developerConnection>scm:git:http://gitea:3000/DevOps_Master_studies/OccuranceTraker.git
+        <connection>scm:git:https://github.com/NHristovski/OccurrenceTraker.git</connection>
+        <developerConnection>scm:git:https://github.com/NHristovski/OccurrenceTraker.git
         </developerConnection>
-        <url>http://gitea:3000/DevOps_Master_studies/OccuranceTraker.git</url>
+        <url>https://github.com/NHristovski/OccurrenceTraker.git</url>
         <tag>HEAD</tag>
     </scm>
 
