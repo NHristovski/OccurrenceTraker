@@ -52,7 +52,7 @@ jobs:
         prerelease: false
     
     - name: Lists root
-      run: ls -al
+      run: mv dist/*.jar dist/OccurrenceTraker-${{ github.ref_name }}.jar
 
     - name: Lists dist
       run: ls -al dist/*
@@ -63,6 +63,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: dist/*.jar  # Replace with the path to your build output
-        asset_name: occurance-traker.jar  # Replace with the desired name for the release asset
+        asset_path: dist/OccurrenceTraker-${{ github.ref_name }}.jar
+        asset_name: OccurrenceTraker-${{ github.ref_name }}.jar  # Replace with the desired name for the release asset
         asset_content_type: application/java-archive
