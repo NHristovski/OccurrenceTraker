@@ -1,0 +1,29 @@
+###
+# @name Valid POST request
+POST http://localhost:30080/add
+Content-Type: application/json
+
+{"word":"b"}
+
+###
+# @name Invalid POST request
+POST http://localhost:30080/add
+Content-Type: application/json
+
+{"word":"b1"}
+
+###
+# @name Valid GET request with positive integer result
+GET http://localhost:30080/get/b
+Content-Type: application/json
+
+###
+# @name Valid GET request with result 0
+GET http://localhost:30080/get/c
+Content-Type: application/json
+
+
+###
+# @name Invalid GET request
+GET http://localhost:30080/get/b1
+Content-Type: application/json

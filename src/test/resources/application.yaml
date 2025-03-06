@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: OccurenceTrakerApplication
+  data:
+    redis:
+      host: redis-test
+      port: 6379
+      usePassword: false
+      password: redis
