@@ -139,4 +139,12 @@ jobs:
       - name: ls
         run: ls -al
 
+      - name: change version
+        run: |
+          sed -i 's/  tag: ".*"/  tag: "${{ needs.tag.outputs.newesttag }}"/' occurance-traker-prod/values.yaml
+          git add .
+          git commit -m "image tag change to ${{ needs.tag.outputs.newesttag }}"
+          git push origin main
+
+
 
