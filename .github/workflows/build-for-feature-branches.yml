@@ -13,6 +13,8 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      dtag: ${{ steps.dockerpush.outputs.dtag }}
 
     steps:
     - name: Checkout code
@@ -62,24 +64,28 @@ jobs:
         
         echo "dtag=${dockertag}\n" >> $GITHUB_OUTPUT
 
-    - name: Check out the deployment repo
-      uses: actions/checkout@master
-      with:
-        repository: NHristovski/GHArgoAppOfApps
-        token: ${{ secrets.TAGPAT }}
+  devdeploy:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the deployment repo
+        uses: actions/checkout@master
+        with:
+          repository: NHristovski/GHArgoAppOfApps
+          token: ${{ secrets.TAGPAT }}
 
-    - name: change version
-      run: |
-        newtag=steps.dockerpush.outputs.dtag
+      - name: change version
+        run: |
+          newtag= ${{ needs.build.outputs.dtag }}
+            
+          echo ${newtag}
+          sed -i "s/  tag: \".*\"/  tag: \"${newtag}\"/" occurance-traker-dev/values.yaml
           
-        echo ${newtag}
-        sed -i "s/  tag: \".*\"/  tag: \"${newtag}\"/" occurance-traker-dev/values.yaml
-        
-        git config --global user.email "githubaction@devops.master"
-        git config --global user.name "githubations"
-        
-        git add .
-        git commit -m "image tag change to ${newtag}"
-        git push origin main
-    
-
+          git config --global user.email "githubaction@devops.master"
+          git config --global user.name "githubations"
+          
+          git add .
+          git commit -m "image tag change to ${newtag}"
+          git push origin main
+      
+  
