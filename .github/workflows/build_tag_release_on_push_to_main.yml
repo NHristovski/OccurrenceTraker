@@ -109,4 +109,19 @@ jobs:
           asset_name: OccurrenceTraker-${{ needs.tag.outputs.newesttag }}.jar  # Replace with the desired name for the release asset
           asset_content_type: application/java-archive
 
+      - name: docker login
+        run : echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
+      - name: docker build
+        run: docker build -t nikolahristovski/ghoccurancetraker:${{ needs.tag.outputs.newesttag }} --build-arg JAR_FILE=./dist/OccurrenceTraker-${{ needs.tag.outputs.newesttag }}.jar
+
+      - name: docker push
+        run: docker push nikolahristovski/ghoccurancetraker:${{ needs.tag.outputs.newesttag }}  
+          
+          
+          
+          
+
+        
+
+          .
