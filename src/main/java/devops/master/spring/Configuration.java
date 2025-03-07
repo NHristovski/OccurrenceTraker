@@ -32,7 +32,7 @@ public class Configuration {
     @Bean
     JedisConnectionFactory jedisConnectionFactory() {
 
-        log.info("REDIS hostname is {}", redisHostname);
+        log.info("REDIS test hostname is {}", redisHostname);
         log.info("REDIS port is {}", redisPort);
 
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
