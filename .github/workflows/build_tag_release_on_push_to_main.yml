@@ -37,6 +37,8 @@ jobs:
   tag:
     needs: build
     runs-on: ubuntu-latest
+    outputs:
+      newesttag: ${{ steps.savetag.outputs.NEWESTTAG }}
     steps:
       - uses: actions/checkout@v2
 
@@ -59,12 +61,15 @@ jobs:
 
       - name: save tag
         id: savetag
-        run: echo "newesttag=${{ steps.bump-semver.outputs.new_version }}" >> $GITHUB_OUTPUT
+        run: echo "NEWESTTAG=${{ steps.bump-semver.outputs.new_version }}" >> $GITHUB_OUTPUT
 
   release:
     needs: tag
     runs-on: ubuntu-latest
     steps:
+      - name: echo tag name
+        run: echo $TAGNAME
+
       - name: Download Artifact
         uses: actions/download-artifact@v4
         with:
