@@ -76,7 +76,7 @@ jobs:
 
       - name: change version
         run: |
-          newtag= ${{ needs.build.outputs.dtag }}
+          newtag=${{ needs.build.outputs.dtag }}
             
           echo ${newtag}
           sed -i "s/  tag: \".*\"/  tag: \"${newtag}\"/" occurance-traker-dev/values.yaml
