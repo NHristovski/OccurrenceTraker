@@ -62,7 +62,7 @@ jobs:
         
         docker push nikolahristovski/ghoccurancetraker:${dockertag}
         
-        echo "dtag=${dockertag}\n" >> $GITHUB_OUTPUT
+        echo "dtag=${dockertag}" >> $GITHUB_OUTPUT
 
   devdeploy:
     needs: [build]
