@@ -1,0 +1,101 @@
+name: Build Tag and Release on push to main
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'  # Replace with your desired Java version
+          distribution: 'temurin'
+
+      - name: Build the project
+        run: ./mvnw clean package
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifact
+          path: target/*.jar
+
+
+  tag:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions-ecosystem/action-get-latest-tag@v1
+        id: get-latest-tag
+
+      - uses: actions-ecosystem/action-bump-semver@v1
+        id: bump-semver
+        with:
+          current_version: ${{ steps.get-latest-tag.outputs.tag }}
+          level: minor
+
+      - name: echo the version
+        run: echo ${{ steps.bump-semver.outputs.new_version }}
+
+      - uses: actions-ecosystem/action-push-tag@v1
+        with:
+          tag: ${{ steps.bump-semver.outputs.new_version }}
+          message: '${{ steps.bump-semver.outputs.new_version }}: PR #${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}'
+
+      - name: save tag
+        id: save tag
+        run: echo "newesttag=${{ steps.bump-semver.outputs.new_version }}" >> $GITHUB_OUTPUT
+
+  release:
+    needs: tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifact
+          path: dist
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ needs.tag.outputs.newesttag }}
+          release_name: Release ${{ needs.tag.outputs.newesttag }}
+          draft: false
+          prerelease: false
+
+      - name: Lists root
+        run: mv dist/*.jar dist/OccurrenceTraker-${{ needs.tag.outputs.newesttag }}.jar
+
+      - name: Lists dist
+        run: ls -al dist/*
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/OccurrenceTraker-${{ needs.tag.outputs.newesttag }}.jar
+          asset_name: OccurrenceTraker-${{ needs.tag.outputs.newesttag }}.jar  # Replace with the desired name for the release asset
+          asset_content_type: application/java-archive
+
+
