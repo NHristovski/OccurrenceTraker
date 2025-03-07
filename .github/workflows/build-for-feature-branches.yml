@@ -40,6 +40,7 @@ jobs:
       run: echo ${{ steps.bump-semver.outputs.new_version }}-$(date "+%Y%m%d%H%M%S")-SNAPSHOT
 
     - name: Docker build and push
+      id: dockerpush
       run: |
         
         ls -al 
@@ -51,11 +52,15 @@ jobs:
         
         ls -al target/*
 
+        dockertag=${{ steps.bump-semver.outputs.new_version }}-$(date "+%Y%m%d%H%M%S")-SNAPSHOT
+        
         echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
         
-        docker build -t nikolahristovski/ghoccurancetraker:${{ steps.bump-semver.outputs.new_version }}-$(date "+%Y%m%d%H%M%S")-SNAPSHOT --build-arg JAR_FILE=./target/app.jar .
+        docker build -t nikolahristovski/ghoccurancetraker:${dockertag} --build-arg JAR_FILE=./target/app.jar .
         
-        docker push nikolahristovski/ghoccurancetraker:${{ steps.bump-semver.outputs.new_version }}-$(date "+%Y%m%d%H%M%S")-SNAPSHOT
+        docker push nikolahristovski/ghoccurancetraker:${dockertag}
+        
+        echo "dtag=${dockertag}\n" >> $GITHUB_OUTPUT
 
     - name: Check out the deployment repo
       uses: actions/checkout@master
@@ -65,8 +70,8 @@ jobs:
 
     - name: change version
       run: |
-        newtag=${{ steps.bump-semver.outputs.new_version }}-$(date "+%Y%m%d%H%M%S")-SNAPSHOT
-        
+        newtag=steps.dockerpush.outputs.dtag
+          
         echo ${newtag}
         sed -i "s/  tag: \".*\"/  tag: \"${newtag}\"/" occurance-traker-dev/values.yaml
         
