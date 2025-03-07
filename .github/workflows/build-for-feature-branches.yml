@@ -41,10 +41,12 @@ jobs:
 
     - name: Docker build and push
       run: |
-        mv dist/*.jar disk/app.jar
+        
         ls -al 
         ls -al dist/*
         
+        mv OccurrenceTraker/target/OccurrenceTraker-.*.jar OccurrenceTraker/target/app.jar
+
         echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
         
         docker build -t nikolahristovski/ghoccurancetraker:${{ steps.bump-semver.outputs.new_version }}-$(date "+%Y%m%d%H%M%S")-SNAPSHOT --build-arg JAR_FILE=./dist/app.jar .
