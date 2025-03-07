@@ -24,8 +24,14 @@ jobs:
           java-version: '21'  # Replace with your desired Java version
           distribution: 'temurin'
 
+      - name: Run unit tests
+        run: ./mvnw test
+
+      - name: Run integration tests
+        run: ./mvnw failsafe:integration-test
+
       - name: Build the project
-        run: ./mvnw clean package
+        run: ./mvnw -DskipTests clean package
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
