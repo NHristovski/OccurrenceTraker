@@ -13,6 +13,8 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      dtag: ${{ steps.dockerpush.outputs.dtag }}
 
     steps:
     - name: Checkout code
@@ -40,37 +42,50 @@ jobs:
       run: echo ${{ steps.bump-semver.outputs.new_version }}-$(date "+%Y%m%d%H%M%S")-SNAPSHOT
 
     - name: Docker build and push
+      id: dockerpush
       run: |
         
         ls -al 
-        ls -al dist/*
+        ls -al target/* 
+        oldfile=$(find target -name "*.jar")
+        echo $oldfile
         
-        mv OccurrenceTraker/target/OccurrenceTraker-.*.jar OccurrenceTraker/target/app.jar
+        mv $oldfile target/app.jar
+        
+        ls -al target/*
 
+        dockertag=${{ steps.bump-semver.outputs.new_version }}-$(date "+%Y%m%d%H%M%S")-SNAPSHOT
+        
         echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
         
-        docker build -t nikolahristovski/ghoccurancetraker:${{ steps.bump-semver.outputs.new_version }}-$(date "+%Y%m%d%H%M%S")-SNAPSHOT --build-arg JAR_FILE=./OccurrenceTraker/target/app.jar .
+        docker build -t nikolahristovski/ghoccurancetraker:${dockertag} --build-arg JAR_FILE=./target/app.jar .
         
-        docker push nikolahristovski/ghoccurancetraker:${{ steps.bump-semver.outputs.new_version }}-$(date "+%Y%m%d%H%M%S")-SNAPSHOT
+        docker push nikolahristovski/ghoccurancetraker:${dockertag}
+        
+        echo "dtag=${dockertag}" >> $GITHUB_OUTPUT
 
-    - name: Check out the deployment repo
-      uses: actions/checkout@master
-      with:
-        repository: NHristovski/GHArgoAppOfApps
-        token: ${{ secrets.TAGPAT }}
+  devdeploy:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the deployment repo
+        uses: actions/checkout@master
+        with:
+          repository: NHristovski/GHArgoAppOfApps
+          token: ${{ secrets.TAGPAT }}
 
-    - name: change version
-      run: |
-        newtag=${{ steps.bump-semver.outputs.new_version }}-$(date "+%Y%m%d%H%M%S")-SNAPSHOT
-        
-        echo ${newtag}
-        sed -i "s/  tag: \".*\"/  tag: \"${newtag}\"/" occurance-traker-dev/values.yaml
-        
-        git config --global user.email "githubaction@devops.master"
-        git config --global user.name "githubations"
-        
-        git add .
-        git commit -m "image tag change to ${newtag}"
-        git push origin main
-    
-
+      - name: change version
+        run: |
+          newtag=${{ needs.build.outputs.dtag }}
+            
+          echo ${newtag}
+          sed -i "s/  tag: \".*\"/  tag: \"${newtag}\"/" occurance-traker-dev/values.yaml
+          
+          git config --global user.email "githubaction@devops.master"
+          git config --global user.name "githubations"
+          
+          git add .
+          git commit -m "image tag change to ${newtag}"
+          git push origin main
+      
+  
