@@ -43,9 +43,9 @@ jobs:
       run: |
         
         ls -al 
-        ls -al dist/*
-        
-        mv OccurrenceTraker/target/OccurrenceTraker-.*.jar OccurrenceTraker/target/app.jar
+        ls -al target/* 
+        mv target/OccurrenceTraker-.*.jar target/app.jar
+        ls -al target/*
 
         echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
         
