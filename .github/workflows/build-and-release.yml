@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - 'v*'  
+env:
+  GITHUB_TOKEN: ${{ secrets.TAGPAT }}
 
 jobs:
   build:
