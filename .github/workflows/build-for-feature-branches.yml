@@ -1,0 +1,74 @@
+name: Build for feature branches
+
+on:
+  push:
+    branches:
+      - 'feature/*'
+
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: '21'  # Replace with your desired Java version
+        distribution: 'temurin'
+
+    - name: Build the project
+      run: ./mvnw clean package
+
+    - uses: actions-ecosystem/action-get-latest-tag@v1
+      id: get-latest-tag
+
+    - uses: actions-ecosystem/action-bump-semver@v1
+      id: bump-semver
+      with:
+        current_version: ${{ steps.get-latest-tag.outputs.tag }}
+        level: minor
+
+    - name: echo the version
+      run: echo ${{ steps.bump-semver.outputs.new_version }}-$(date "+%Y%m%d%H%M%S")-SNAPSHOT
+
+    - name: Docker build and push
+      run: |
+        mv dist/*.jar disk/app.jar
+        ls -al 
+        ls -al dist/*
+        
+        echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
+        
+        docker build -t nikolahristovski/ghoccurancetraker:${{ steps.bump-semver.outputs.new_version }}-$(date "+%Y%m%d%H%M%S")-SNAPSHOT --build-arg JAR_FILE=./dist/app.jar .
+        
+        docker push nikolahristovski/ghoccurancetraker:${{ steps.bump-semver.outputs.new_version }}-$(date "+%Y%m%d%H%M%S")-SNAPSHOT
+
+    - name: Check out the deployment repo
+      uses: actions/checkout@master
+      with:
+        repository: NHristovski/GHArgoAppOfApps
+        token: ${{ secrets.TAGPAT }}
+
+    - name: change version
+      run: |
+        newtag=${{ steps.bump-semver.outputs.new_version }}-$(date "+%Y%m%d%H%M%S")-SNAPSHOT
+        
+        echo ${newtag}
+        sed -i "s/  tag: \".*\"/  tag: \"${newtag}\"/" occurance-traker-dev/values.yaml
+        
+        git config --global user.email "githubaction@devops.master"
+        git config --global user.name "githubations"
+        
+        git add .
+        git commit -m "image tag change to ${newtag}"
+        git push origin main
+    
+
