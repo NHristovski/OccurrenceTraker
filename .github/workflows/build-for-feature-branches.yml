@@ -44,7 +44,10 @@ jobs:
         
         ls -al 
         ls -al target/* 
-        mv target/.*.jar target/app.jar
+        oldfile=$(find target -name "*.jar")
+        echo $oldfile
+        
+        mv $oldfile target/app.jar
         
         ls -al target/*
 
