@@ -124,12 +124,19 @@ jobs:
         run: docker build -t nikolahristovski/ghoccurancetraker:${{ needs.tag.outputs.newesttag }} --build-arg JAR_FILE=./dist/OccurrenceTraker-${{ needs.tag.outputs.newesttag }}.jar .
 
       - name: docker push
-        run: docker push nikolahristovski/ghoccurancetraker:${{ needs.tag.outputs.newesttag }}  
-          
-          
-          
-          
+        run: docker push nikolahristovski/ghoccurancetraker:${{ needs.tag.outputs.newesttag }}
 
-        
+  cd:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the deployment repo
+        uses: actions/checkout@master
+        with:
+          repository: NHristovski/GHArgoAppOfApps
+          token: ${{ secrets.TAGPAT }}
 
-          .
+      - name: ls
+        run: ls -al
+
+
