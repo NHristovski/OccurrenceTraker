@@ -68,7 +68,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: echo tag name
-        run: echo $TAGNAME
+        run: echo ${{ needs.tag.outputs.newesttag }}
 
       - name: Download Artifact
         uses: actions/download-artifact@v4
