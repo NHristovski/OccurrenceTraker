@@ -21,7 +21,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          java-version: '21'  # Replace with your desired Java version
+          java-version: '21'
           distribution: 'temurin'
 
       - name: Run unit tests
@@ -111,7 +111,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: dist/OccurrenceTraker-${{ needs.tag.outputs.newesttag }}.jar
-          asset_name: OccurrenceTraker-${{ needs.tag.outputs.newesttag }}.jar  # Replace with the desired name for the release asset
+          asset_name: OccurrenceTraker-${{ needs.tag.outputs.newesttag }}.jar
           asset_content_type: application/java-archive
 
       - name: list all

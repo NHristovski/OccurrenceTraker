@@ -23,7 +23,7 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v3
       with:
-        java-version: '21'  # Replace with your desired Java version
+        java-version: '21'
         distribution: 'temurin'
 
     - name: Build the project
