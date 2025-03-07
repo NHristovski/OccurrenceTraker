@@ -58,7 +58,7 @@ jobs:
           message: '${{ steps.bump-semver.outputs.new_version }}: PR #${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}'
 
       - name: save tag
-        id: save tag
+        id: savetag
         run: echo "newesttag=${{ steps.bump-semver.outputs.new_version }}" >> $GITHUB_OUTPUT
 
   release:
