@@ -127,9 +127,12 @@ jobs:
         run: docker push nikolahristovski/ghoccurancetraker:${{ needs.tag.outputs.newesttag }}
 
   cd:
-    needs: release
+    needs: [tag, release]
     runs-on: ubuntu-latest
     steps:
+      - name: echo tag name
+        run: echo ${{ needs.tag.outputs.newesttag }}
+
       - name: Check out the deployment repo
         uses: actions/checkout@master
         with:
