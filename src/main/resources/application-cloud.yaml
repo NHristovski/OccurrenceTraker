@@ -1,0 +1,8 @@
+#SPRING_PROFILES_ACTIVE=cloud
+spring:
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      usePassword: ${REDIS_USE_PASSWORD}
+      password: ${REDIS_PASSWORD}
