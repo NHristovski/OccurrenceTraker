@@ -1,9 +1,10 @@
 ###
 # @name Valid POST request
-POST http://localhost:30080/add
+
+POST https://occurance-traker.127.0.0.1.sslip.io/add
 Content-Type: application/json
 
-{"word":"b"}
+{"word":"test"}
 
 ###
 # @name Invalid POST request
