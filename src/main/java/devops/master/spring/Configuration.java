@@ -32,8 +32,8 @@ public class Configuration {
     @Bean
     JedisConnectionFactory jedisConnectionFactory() {
 
-        log.info("Date 09.07.2025 -> Redis hostname is {}", redisHostname);
-        log.info("Date 09.07.2025 -> Redis port is {}", redisPort);
+        log.info("Date 10.07.2025 -> Redis hostname is {}", redisHostname);
+        log.info("Date 10.07.2025 -> Redis port is {}", redisPort);
 
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
         redisStandaloneConfiguration.setHostName(redisHostname);
